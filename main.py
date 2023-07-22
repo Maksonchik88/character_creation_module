@@ -1,105 +1,108 @@
-import datetime as dt
-import decimal as dc
-
-FORMAT = '%H:%M:%S'
-WEIGHT = 75  # Вес.
-HEIGHT = 175  # Рост.
-K_1 = 0.035  # Коэффициент для подсчета калорий.
-K_2 = 0.029  # Коэффициент для подсчета калорий.
-STEP_M = 0.65  # Длина шага в метрах.
-
-storage_data = {}  # Словарь для хранения полученных данных.
+from random import randint
+from graphic_arts.start_game_banner import run_screensaver
 
 
-def check_correct_data(data):
-    """Проверка корректности полученного пакета."""
-    return len(data) == 2 and isinstance(data[0], str) and len(data[0].split(':')) == 3 and isinstance(data[1], int) \
-        and all(d.isdecimal() for d in data[0].split(':'))
+def attack(char_name: str, char_class: str) -> str:
+    """Функция возвращает урон при атаке персонажа."""
+    if char_class == 'warrior':
+        return (
+            f'{char_name} нанёс урон противнику равный {5 + randint(3, 5)}'
+        )
+    if char_class == 'mage':
+        return (f'{char_name} нанёс урон противнику равный'
+                ' {5 + randint(5, 10)}')
+    if char_class == 'healer':
+        return (f'{char_name} нанёс урон противнику равный '
+                '{5 + randint(-3, -1)}')
 
 
-def check_correct_time(time):
-    """Проверка корректности параметра времени."""
-    if len(storage_data) > 0 and time <= max(storage_data.keys()):
-        return False
-    return True
+def defence(char_name: str, char_class: str) -> str:
+    """"Функция возвращает урон при защите персонажа."""
+    if char_class == 'warrior':
+        return (
+            f'{char_name} блокировал {10 + randint(5, 10)} урона'
+        )
+    if char_class == 'mage':
+        return (
+            f'{char_name} блокировал {10 + randint(-2, 2)} урона'
+        )
+    if char_class == 'healer':
+        return (
+            f'{char_name} блокировал {10 + randint(2, 5)} урона'
+        )
 
 
-def get_step_day(steps: int):
-    """Получить количество пройденных шагов за этот день."""
-    all_steps = sum(storage_data.values())
-    return all_steps + steps
+def special(char_name: str, char_class: str) -> str:
+    """Функция возвращает урон после специального умения."""
+    if char_class == 'warrior':
+        return (f'{char_name} применил специальное умение '
+                '«Выносливость {80 + 25}»')
+    if char_class == 'mage':
+        return (f'{char_name} применил специальное умение'
+                ' «Атака {5 + 40}»')
+    if char_class == 'healer':
+        return (f'{char_name} применил специальное умение «Защита {10 + 30}»')
 
 
-def get_distance(steps: int):
-    """Получить дистанцию пройденного пути в км."""
-    return (steps * STEP_M) / 1000
+def start_training(char_name: str, char_class: str) -> str:
+    """Понятия не имею, как описать эту функцию."""
+    if char_class == 'warrior':
+        print(f'{char_name}, ты Воитель — отличный боец ближнего боя.')
+    if char_class == 'mage':
+        print(f'{char_name}, ты Маг — превосходный укротитель стихий.')
+    if char_class == 'healer':
+        print(f'{char_name}, ты Лекарь — чародей, способный исцелять раны.')
+    print('Потренируйся управлять своими навыками.')
+    print('Введи одну из команд: attack — чтобы атаковать противника, '
+          'defence — чтобы блокировать атаку противника или special '
+          '— чтобы использовать свою суперсилу.')
+    print('Если не хочешь тренироваться, введи команду skip.')
+    cmd: str = None
+    while cmd != 'skip':
+        cmd = input('Введи команду: ')
+        if cmd == 'attack':
+            print(attack(char_name, char_class))
+        if cmd == 'defence':
+            print(defence(char_name, char_class))
+        if cmd == 'special':
+            print(special(char_name, char_class))
+    return 'Тренировка окончена.'
 
 
-def get_spent_calories(dist: float, current_time: dt.time):
-    """Получить значения потраченных калорий."""
-    minutes = current_time.hour * 60 + current_time.minute
-    mean_speed = dist / (minutes / 60)
-    spent_calories = (dc.Decimal(K_1) * dc.Decimal(WEIGHT) + (dc.Decimal(mean_speed) ** 2 / dc.Decimal(HEIGHT)) * dc.Decimal(K_2) * dc.Decimal(WEIGHT)) * dc.Decimal(minutes)
-    return spent_calories
-    # time = current_time.hour * 3600 + current_time.minute * 60 + current_time.second
-    # spent_calories = (K_1 * WEIGHT + (((dist * 1000 / time) ** 2) / HEIGHT) * K_2 * WEIGHT) * (time / 60)
-    # return spent_calories
-    # В уроке «Последовательности» вы написали формулу расчета калорий.
-    # Перенесите её сюда и верните результат расчётов.
-    # Для расчётов вам потребуется значение времени;
-    # получите его из объекта current_time;
-    # переведите часы и минуты в часы, в значение типа float.
+def choice_char_class() -> str:
+    """Тут тоже вопросики по описанию."""
+    approve_choice: str = ''
+    char_class: str = ''
+    while approve_choice != 'y':
+        char_class = input('Введи название персонажа, '
+                           'за которого хочешь играть:'
+                           ' Воитель — warrior, Маг — mage, Лекарь — healer: ')
+        if char_class == 'warrior':
+            print('Воитель — дерзкий воин ближнего боя. '
+                  'Сильный, выносливый и отважный.')
+        if char_class == 'mage':
+            print('Маг — находчивый воин дальнего боя. '
+                  'Обладает высоким интеллектом.')
+        if char_class == 'healer':
+            print('Лекарь — могущественный заклинатель. '
+                  'Черпает силы из природы, веры и духов.')
+        approve_choice = input('Нажми (Y), чтобы подтвердить выбор, или '
+                               'любую другую кнопку,'
+                               ' чтобы выбрать другого персонажа ').lower()
+    return char_class
 
 
-def get_achievement(dist):
-    """Получить поздравления за пройденную дистанцию."""
-    if dist >= 6.5:
-        achievement = 'Отличный результат! Цель достигнута.'
-    elif dist >= 3.9:
-        achievement = 'Неплохо! День был продуктивным.'
-    elif dist >= 2:
-        achievement = 'Маловато, но завтра наверстаем!'
-    else:
-        achievement = 'Лежать тоже полезно. Главное — участие, а не победа!'
-    return achievement
+if __name__ == '__main__':
+    run_screensaver()
+    print('Приветствую тебя, искатель приключений!')
+    print('Прежде чем начать игру...')
+    char_name: str = input('...назови себя: ')
+    print(f'Здравствуй, {char_name}! '
+          'Сейчас твоя выносливость — 80, атака — 5 и защита — 10.')
+    print('Ты можешь выбрать один из трёх путей силы:')
+    print('Воитель, Маг, Лекарь')
+    char_class: str = choice_char_class()
+    print(start_training(char_name, char_class))
 
 
-def show_message(dist: float, current_time: dt.time, calories: float, steps: int, achievement: str):
-    print()
-    print(f"Время: {current_time}.")
-    print(f"Количество шагов за сегодня: {steps}.")
-    print(f"Дистанция составила {dist:.2f} км.")
-    print(f"Вы сожгли {calories:.2f} ккал.")
-    print(achievement)
-    print()
-
-
-def accept_package(data):
-    """Обработать пакет данных."""
-
-    if not check_correct_data(data):
-        return 'Некорректный пакет'
-    pack_time = dt.datetime.strptime(data[0], FORMAT).time()
-    if not check_correct_time(pack_time):
-        return 'Некорректное значение времени'
-
-    day_steps = get_step_day(data[1])
-    dist = get_distance(day_steps)
-    spent_calories = get_spent_calories(dist, pack_time)
-    achievement = get_achievement(dist)
-    show_message(dist, pack_time, spent_calories, day_steps, achievement)
-    storage_data[pack_time] = data[1]
-    return storage_data
-
-
-package_0 = ('2:00:01', 505)
-package_1 = (None, 3211)
-package_2 = ('9:36:02', 15000)
-package_3 = ('9:36:02', 9000)
-package_4 = ('8:01:02', 7600)
-
-accept_package(package_0)
-accept_package(package_1)
-accept_package(package_2)
-accept_package(package_3)
-accept_package(package_4)
+# main()
