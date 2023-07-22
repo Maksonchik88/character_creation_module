@@ -1,0 +1,14 @@
+attrs==23.1.0
+flake8==6.0.0
+flake8-annotations==3.0.1
+iniconfig==2.0.0
+mccabe==0.7.0
+mypy==1.4.1
+mypy-extensions==1.0.0
+packaging==23.1
+pep8-naming==0.13.3
+pluggy==1.2.0
+pycodestyle==2.10.0
+pyflakes==3.0.1
+pytest==7.4.0
+typing_extensions==4.7.1
